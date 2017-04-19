@@ -4,11 +4,26 @@ var state = {
 
 // State modification functions
 var addItem = function(state, item) {
+	alert("here");
 	var itemObj = {
 		itemName: item,
 		checked: false
 	};
     state.items.push(itemObj);
+};
+
+var toggleItem = function(state, item) {
+	var index = state.items.map(function(val) { return val.itemName;}).indexOf(item);
+	if(index > -1) {
+		state.items[index].checked = !state.items[index].checked;
+	}
+};
+
+var deleteItem = function(state, item) {
+	var index = state.items.map(function(val) { return val.itemName;}).indexOf(item)
+	if(index > -1) {
+		state.items.splice(index, 1);
+	}
 };
 
 // Render functions
@@ -28,23 +43,11 @@ var renderList = function(state, element) {
     element.html(itemsHTML);
 };
 
-var toggleItem = function(state, element, toggledClass) {
-	var item = element.closest("li").find(".shopping-item").text();
-	var index = state.items.map(function(val) { return val.itemName;}).indexOf(item);
-	//var index = state.items.indexOf(element.closest("li").find(".shopping-item").text());
-	if(index > -1) {
-		state.items[index].checked = !state.items[index].checked;
-	}
+var renderToggledItem = function(element, toggledClass) {
 	element.closest("li").find(".shopping-item").toggleClass(toggledClass);
 };
 
-var deleteItem = function(state, element) {
-	var item = element.closest("li").find(".shopping-item").text();
-	var index = state.items.map(function(val) { return val.itemName;}).indexOf(item)
-	//var index = state.items.indexOf(element.closest("li").find(".shopping-item").text());
-	if(index > -1) {
-		state.items.splice(index, 1);
-	}
+var renderDeletedItem = function(element) {
 	element.closest("li").remove();
 };
 
@@ -56,9 +59,11 @@ $('#js-shopping-list-form').submit(function(event) {
 });
 
 $('.shopping-list').on("click",".shopping-item-toggle",function(event) {
-	toggleItem(state, $(this),"shopping-item__checked");
+	toggleItem(state, $(this).closest("li").find(".shopping-item").text());
+	renderToggledItem($(this),"shopping-item__checked");
 });
 
 $('.shopping-list').on("click",".shopping-item-delete",function(event) {
-	deleteItem(state, $(this));
+	deleteItem(state, $(this).closest("li").find(".shopping-item").text());
+	renderDeletedItem($(this));
 });
